@@ -1,0 +1,313 @@
+library(dplyr)
+library(readr)
+#분석에 필요한 데이터 불러오기
+#jk=자격정보 데이터
+jk <- read_csv("C:/Users/차도현/OneDrive/바탕 화면/새 폴더/nhid_jk_gyeongnam.csv")
+#밑의 데이터는 진료 정보 데이터
+t20_2002<-read_csv("C:/Users/차도현/OneDrive/바탕 화면/새 폴더/nhid_gy20_t1_2002_gyeongnam.csv")
+t20_2003<-read_csv("C:/Users/차도현/OneDrive/바탕 화면/새 폴더/nhid_gy20_t1_2003_gyeongnam.csv")
+t20_2004<-read_csv("C:/Users/차도현/OneDrive/바탕 화면/새 폴더/nhid_gy20_t1_2004_gyeongnam.csv")
+t20_2006<-read_csv("C:/Users/차도현/OneDrive/바탕 화면/새 폴더/nhid_gy20_t1_2006_gyeongnam.csv")
+t20_2007<-read_csv("C:/Users/차도현/OneDrive/바탕 화면/새 폴더/nhid_gy20_t1_2007_gyeongnam.csv")
+t20_2008<-read_csv("C:/Users/차도현/OneDrive/바탕 화면/새 폴더/nhid_gy20_t1_2008_gyeongnam.csv")
+t20_2009<-read_csv("C:/Users/차도현/OneDrive/바탕 화면/새 폴더/nhid_gy20_t1_2009_gyeongnam.csv")
+t20_2010<-read_csv("C:/Users/차도현/OneDrive/바탕 화면/새 폴더/nhid_gy20_t1_2010_gyeongnam.csv")
+t20_2011<-read_csv("C:/Users/차도현/OneDrive/바탕 화면/새 폴더/nhid_gy20_t1_2011_gyeongnam.csv")
+t20_2012<-read_csv("C:/Users/차도현/OneDrive/바탕 화면/새 폴더/nhid_gy20_t1_2012_gyeongnam.csv")
+t20_2013<-read_csv("C:/Users/차도현/OneDrive/바탕 화면/새 폴더/nhid_gy20_t1_2013_gyeongnam.csv")
+
+
+#테이블1(질병군 비질병군 테이블)
+
+#gy20 2003년 데이터에서 주상병이 고혈압인 사람들 추출
+dm20_2003_i <- t20_2003[which(substr(t20_2003$MAIN_SICK,1,3)%in%
+                                c("I10", "I11", "I12", "I13", "I14","I15")),
+                        c("PERSON_ID","RECU_FR_DT")]
+View(dm20_2003_i)
+#2003년 고혈압인 사람들 추출해서 중복 제거
+dm20_2003_i_nodup=dm20_2003_i[!duplicated(dm20_2003_i$PERSON_ID),]
+dm20_2003_i_nodup$main_sick_i='i'
+View(dm20_2003_i_nodup)
+#gy20 2002년 데이터에서 주상병이 고혈압인 사람들 추출
+dm20_2002_i <- t20_2002[which(substr(t20_2002$MAIN_SICK,1,3)%in%
+                                c("I10", "I11", "I12", "I13", "I14","I15")),
+                        c("PERSON_ID","RECU_FR_DT")]
+View(dm20_2002_i)
+#2002년 고혈압인 사람들 추출해서 중복 제거
+dm20_2002_i_nodup=dm20_2002_i[!duplicated(dm20_2002_i$PERSON_ID),]
+dm20_2002_i_nodup$main_sick_i='i'
+View(dm20_2002_i_nodup)
+#2002년 2003년 고혈압 걸린 사람들 합쳐주기
+z<-rbind(dm20_2003_i_nodup,dm20_2002_i_nodup)
+View(z)
+#2002년과 2003년 고혈압 걸린 사람들 합쳤을때 중복 생기는값 제거
+a_nodup_i=z[!duplicated(z$PERSON_ID),]
+View(a_nodup_i)
+#person_id 와 주상병이 고혈압인 변수의 정보만 추출
+a_nodup_i_0302<-a_nodup_i[ ,c(1,3)]
+View(a_nodup_i_0302)
+
+#gy20 2003년 데이터에서 주상병이 췌장염인 사람들 추출
+dm20_2003_k <- t20_2003[which(substr(t20_2003$MAIN_SICK,1,3)%in%
+                                c("K85", "K86", "K87")),
+                        c("PERSON_ID","RECU_FR_DT")]
+View(dm20_2003_k)
+#2003년 췌장염인 사람들 추출해서 중복 제거
+dm20_2003_k_nodup=dm20_2003_k[!duplicated(dm20_2003_k$PERSON_ID),]
+
+dm20_2003_k_nodup$main_sick_k='k'
+View(dm20_2003_k_nodup)
+#gy20 2002년 데이터에서 주상병이 췌장염인 사람들 추출
+dm20_2002_k <- t20_2002[which(substr(t20_2002$MAIN_SICK,1,3)%in%
+                                c("K85", "K86", "K87")),
+                        c("PERSON_ID","RECU_FR_DT")]
+View(dm20_2002_k)
+#2002년 췌장염인 사람들 추출해서 중복 제거
+dm20_2002_k_nodup=dm20_2002_k[!duplicated(dm20_2002_k$PERSON_ID),]
+dm20_2002_k_nodup$main_sick_k='k'
+View(dm20_2002_k_nodup)
+
+#2002년 2003년 췌장염 걸린 사람들 합쳐주기
+w<-rbind(dm20_2003_k_nodup,dm20_2002_k_nodup)
+View(w)
+
+#2002년과 2003년 췌장염 걸린 사람들 합쳤을때 중복 생기는값 제거
+a_nodup_k=w[!duplicated(w$PERSON_ID),]
+View(a_nodup_k)
+#person_id 와 주상병이 췌장염인 변수의 정보만 추출
+k_nodup_0302<-a_nodup_k[ ,c(1,3)]
+View(k_nodup_0302)
+
+#당뇨병 아이디,진단 날짜 뽑기(당뇨병 코드:"E10", "E11", "E12", "E13", "E14")
+dm20_2004 <- t20_2004[which(substr(t20_2004$MAIN_SICK,1,3)%in%
+                              c("E10", "E11", "E12", "E13", "E14")),
+                      c("PERSON_ID","RECU_FR_DT")]
+View(dm20_2004)
+#중복제거
+dm20_2004_nodup=dm20_2004[!duplicated(dm20_2004$PERSON_ID),]
+
+#당뇨병 아이디,진단 날짜 뽑기(당뇨병 코드:"E10", "E11", "E12", "E13", "E14")
+dm20_2006 <- t20_2006[which(substr(t20_2006$MAIN_SICK,1,3)%in%
+                              c("E10", "E11", "E12", "E13", "E14")),
+                      c("PERSON_ID","RECU_FR_DT")]
+#중복제거
+dm20_2006_nodup=dm20_2006[!duplicated(dm20_2006$PERSON_ID),]
+
+
+#당뇨병 아이디,진단 날짜 뽑기(당뇨병 코드:"E10", "E11", "E12", "E13", "E14")
+dm20_2007 <- t20_2007[which(substr(t20_2007$MAIN_SICK,1,3)%in%
+                              c("E10", "E11", "E12", "E13", "E14")),
+                      c("PERSON_ID","RECU_FR_DT")]
+#중복제거
+dm20_2007_nodup=dm20_2007[!duplicated(dm20_2007$PERSON_ID),]
+
+
+#당뇨병 아이디,진단 날짜 뽑기(당뇨병 코드:"E10", "E11", "E12", "E13", "E14")
+dm20_2008 <- t20_2008[which(substr(t20_2008$MAIN_SICK,1,3)%in%
+                              c("E10", "E11", "E12", "E13", "E14")),
+                      c("PERSON_ID","RECU_FR_DT")]
+#중복제거
+dm20_2008_nodup=dm20_2008[!duplicated(dm20_2008$PERSON_ID),]
+
+
+#당뇨병 아이디,진단 날짜 뽑기(당뇨병 코드:"E10", "E11", "E12", "E13", "E14")
+dm20_2009 <- t20_2009[which(substr(t20_2009$MAIN_SICK,1,3)%in%
+                              c("E10", "E11", "E12", "E13", "E14")),
+                      c("PERSON_ID","RECU_FR_DT")]
+#중복제거
+dm20_2009_nodup=dm20_2009[!duplicated(dm20_2009$PERSON_ID),]
+
+
+#당뇨병 아이디,진단 날짜 뽑기(당뇨병 코드:"E10", "E11", "E12", "E13", "E14")
+dm20_2010 <- t20_2010[which(substr(t20_2010$MAIN_SICK,1,3)%in%
+                              c("E10", "E11", "E12", "E13", "E14")),
+                      c("PERSON_ID","RECU_FR_DT")]
+#중복제거
+dm20_2010_nodup=dm20_2010[!duplicated(dm20_2010$PERSON_ID),]
+
+#당뇨병 아이디,진단 날짜 뽑기(당뇨병 코드:"E10", "E11", "E12", "E13", "E14")
+dm20_2011 <- t20_2011[which(substr(t20_2011$MAIN_SICK,1,3)%in%
+                              c("E10", "E11", "E12", "E13", "E14")),
+                      c("PERSON_ID","RECU_FR_DT")]
+#중복제거
+dm20_2011_nodup=dm20_2011[!duplicated(dm20_2011$PERSON_ID),]
+
+
+#당뇨병 아이디,진단 날짜 뽑기(당뇨병 코드:"E10", "E11", "E12", "E13", "E14")
+dm20_2012 <- t20_2012[which(substr(t20_2012$MAIN_SICK,1,3)%in%
+                              c("E10", "E11", "E12", "E13", "E14")),
+                      c("PERSON_ID","RECU_FR_DT")]
+#중복제거
+dm20_2012_nodup=dm20_2012[!duplicated(dm20_2012$PERSON_ID),]
+
+
+#당뇨병 아이디,진단 날짜 뽑기(당뇨병 코드:"E10", "E11", "E12", "E13", "E14")
+dm20_2013 <- t20_2013[which(substr(t20_2013$MAIN_SICK,1,3)%in%
+                              c("E10", "E11", "E12", "E13", "E14")),
+                      c("PERSON_ID","RECU_FR_DT")]
+#중복제거
+dm20_2013_nodup=dm20_2013[!duplicated(dm20_2013$PERSON_ID),]
+
+
+#2004~2013까지 당뇨병 환자 데이터 합치기
+b<-rbind(dm20_2004_nodup,dm20_2006_nodup,dm20_2007_nodup,dm20_2008_nodup,dm20_2009_nodup,dm20_2010_nodup,dm20_2011_nodup,dm20_2012_nodup,dm20_2013_nodup)
+View(b)
+#중복제거
+b_nodup=b[!duplicated(b$PERSON_ID),]
+View(b_nodup)
+#2002년 데이터 뽑기
+dm20_2002 <- t20_2002[which(substr(t20_2002$MAIN_SICK,1,3)%in%
+                              c("E10", "E11", "E12", "E13", "E14")),
+                      c("PERSON_ID","RECU_FR_DT")]
+#2002년 중복제거
+dm20_2002_nodup=dm20_2002[!duplicated(dm20_2002$PERSON_ID),]
+#2003년 데이터 뽑기
+dm20_2003 <- t20_2003[which(substr(t20_2003$MAIN_SICK,1,3)%in%
+                              c("E10", "E11", "E12", "E13", "E14")),
+                      c("PERSON_ID","RECU_FR_DT")]
+#2003년 중복제거
+dm20_2003_nodup=dm20_2003[!duplicated(dm20_2003$PERSON_ID),]
+
+#2002년 2003년 당뇨병 환자 데이터 합치기
+y<-rbind(dm20_2003,dm20_2002)
+y
+#2002년과 2003년 합쳤을때 중복 생기는값 제거
+a_nodup=y[!duplicated(y$PERSON_ID),]
+View(a_nodup)
+#b_nodup에서 a_nodup과 겹치는 아이디 제거(2004~2013질병군)
+b_nodup_filtered <- b_nodup %>% 
+  filter(!PERSON_ID %in% a_nodup$PERSON_ID)
+View(b_nodup_filtered)
+
+
+#jk에서 연도가 2002,2003인 데이터 뽑기
+jk_2002_2003 <- jk %>%
+  filter(STND_Y %in% c("2002", "2003")) %>%
+  select(PERSON_ID, AGE_GROUP, STND_Y, SEX, CTRB_PT_TYPE_CD, SGG)
+View(jk_2002_2003)
+#뽑은 데이터 내림차순으로 정렬
+jk_2003_2002 <- jk_2002_2003 %>%
+  arrange(desc(STND_Y))
+#뽑은 데이터에서 2003년 기준으로 중복 제거
+jk_2003_2002_nodup=jk_2003_2002[!duplicated(jk_2003_2002$PERSON_ID),]
+View(jk_2003_2002_nodup)
+#2003~2013 당뇨병 환자데이터에 2002,2003년 자격정보 데이터 붙이기
+COHORT<-left_join(b_nodup_filtered,jk_2003_2002_nodup,by="PERSON_ID")
+#질병군과 비질병군 구분해주기 위해 disease 변수 추가(질병군이면 1 비질병군이면 0)
+COHORT$disease=1
+View(COHORT)
+
+#비 질병군 테이블 만들기
+#질병군테이블에 있는 PERSON_ID들 jk_2003_2002_nodup에서 업애주기
+COHORT_filtered <- jk_2003_2002_nodup %>% 
+  filter(!PERSON_ID %in% COHORT$PERSON_ID)
+View(COHORT_filtered)
+#COHORT_filtered 데이터에서 2002~2003질병군인 a_nodup 빼서 비질병군 데이터 만들기
+jk_2003_2002_filtred <- COHORT_filtered %>% 
+  filter(!PERSON_ID %in% a_nodup$PERSON_ID)
+
+View(jk_2003_filtred)
+#질병군과 비질병군 구분해주기 위해 disease 변수 추가(질병군이면 1 비질병군이면 0)
+jk_2003_2002_filtred$disease=0
+View(jk_2003_2002_filtred)
+
+jk_2003_2002_filtred$RECU_FR_DT=0
+View(jk_2003_2002_filtred)
+#질병군 비질병군 붙여주기
+total<-rbind(COHORT,jk_2003_2002_filtred)
+View(total)
+
+#질병군 비질병군 붙인 데이터의 내원일자 변수의 년, 월, 일 사이에 "-" 넣어주기
+total$RECU_FR_DT2=paste(substr(total$RECU_FR_DT,1,4),"-",
+                              
+                              substr(total$RECU_FR_DT,5,6),"-",
+                              
+                              substr(total$RECU_FR_DT,7,8),sep="")
+View(total)
+# follow 변수를 새로 만들어 질병군은 2004년1월1일부터 내원일자까지의 날 계산 
+total$follow= ifelse(total$disease==1, as.Date(total$RECU_FR_DT2)-as.Date("2004-01-01"),
+                           as.Date("2013-12-31")-as.Date("2004-01-01"))
+View(total)
+#질병군 비질병군 데이터에 main_sick이 고혈압인 사람 붙이기
+total_i<-left_join(total,a_nodup_i_0302,by="PERSON_ID")
+#질병군 비질병군 데이터에 main_sick이 췌장염인 사람 붙이기
+total_ik<-left_join(total_i,k_nodup_0302, by="PERSON_ID")
+View(total_ik)
+#STND_Y변수 삭제
+total_ik1 <- total_ik[ , -4]
+View(total_ik1)
+
+#total_ik 데이터에서 AGE_GROUP,SEX,CTRB_PT_TYPE_CD,SGG,main_sick_i,main_sick_k변수 결측치 처리
+total_ik1$AGE_GROUP[is.na(total_ik$AGE_GROUP)==TRUE]=30
+total_ik1$SEX[is.na(total_ik$SEX)==TRUE]=0
+total_ik1$CTRB_PT_TYPE_CD[is.na(total_ik$CTRB_PT_TYPE_CD)==TRUE]=50
+total_ik1$SGG[is.na(total_ik$SGG)==TRUE]=0
+total_ik1$main_sick_i[is.na(total_ik$main_sick_i)==TRUE]=0
+total_ik1$main_sick_k[is.na(total_ik$main_sick_k)==TRUE]=0
+
+View(total_ik1)
+#결측치 제거후 확인
+colSums(is.na(total_ik1))
+
+#질병군 비질병군 테이블에서 age_group (연령)그룹 나누기
+total_ik2 = total_ik1
+total_ik2$AGE_GROUP = 
+  ifelse(total_ik2$AGE_GROUP < 9, 1, 
+         ifelse(total_ik2$AGE_GROUP < 16, 2, 
+                ifelse(total_ik2$AGE_GROUP < 19, 3, 0)))
+View(total_ik2)
+
+# 질병군 비질병군 테이블에서 ctrb_pt_type_cd(보험분위) 그룹 나누기
+total_ik2$CTRB_PT_TYPE_CD = 
+  ifelse(total_ik2$CTRB_PT_TYPE_CD < 3, 1, 
+         ifelse(total_ik2$CTRB_PT_TYPE_CD < 6, 2, 
+                ifelse(total_ik2$CTRB_PT_TYPE_CD < 9, 3,
+                       ifelse(total_ik2$CTRB_PT_TYPE_CD < 11, 4, 0))))
+View(total_ik2)
+
+# 질병군 비질병군 테이블에서 SGG(시군별로) 그룹 나누기
+
+total_ik2$SGG = 
+  ifelse(total_ik2$SGG <= 0, 0, 
+         ifelse(total_ik2$SGG <= 48330, 1, 
+                ifelse(total_ik2$SGG <= 48890, 2, 3)))
+View(total_ik2)
+#질병군 비질병군 테이블 만들어주기
+table(total_ik2$SEX,total_ik2$disease)
+table(total_ik2$AGE_GROUP,total_ik2$disease)
+table(total_ik2$CTRB_PT_TYPE_CD,total_ik2$disease)
+table(total_ik2$SGG,total_ik2$disease)
+table(total_ik2$main_sick_i,total_ik2$disease)
+table(total_ik2$main_sick_k,total_ik1$disease)
+
+str(total_ik2)
+
+#테이블2 
+#요인들에 대한 COX분석
+library(lubridate)
+library(survival)
+model<-coxph(Surv(follow,disease)~as.factor(SEX)+as.factor(AGE_GROUP)+
+               as.factor(CTRB_PT_TYPE_CD)+as.factor(SGG)+as.factor(main_sick_i)+as.factor(main_sick_k),data=total_ik2)
+
+summary(model)
+
+#그룹 1을 기준그룹으로 두기 위해서 숫자형 변수를 문자형으로 변환.
+total_ik2$SEX <- as.factor(total_ik2$SEX)
+total_ik2$SEX<-relevel(total_ik2$SEX, ref = "1") #기준그룹 지정
+
+total_ik2$AGE_GROUP <- as.factor(total_ik2$AGE_GROUP)
+total_ik2$AGE_GROUP <- relevel(total_ik2$AGE_GROUP, ref = "1")
+
+total_ik2$CTRB_PT_TYPE_CD <- as.factor(total_ik2$CTRB_PT_TYPE_CD)
+total_ik2$CTRB_PT_TYPE_CD <- relevel(total_ik2$CTRB_PT_TYPE_CD, ref = "1")
+
+total_ik2$SGG <- as.factor(total_ik2$SGG)
+total_ik2$SGG <- relevel(total_ik2$SGG, ref = "1")
+
+
+
+model1<-coxph(Surv(follow,disease==1)~as.factor(SEX)+as.factor(AGE_GROUP)+
+               as.factor(CTRB_PT_TYPE_CD)+as.factor(SGG)+as.factor(main_sick_i)+as.factor(main_sick_k),data=total_ik2)
+
+summary(model1)
+
